@@ -30,7 +30,7 @@ To run this project, you need to have Python 3 installed, along with the require
 
 1.  **Clone the repository:**
     ```bash
-    git clone <repository_url>
+    git clone https://github.com/lerigort/MNIST_test
     cd MNIST_test
     ```
 
@@ -61,7 +61,14 @@ To run this project, you need to have Python 3 installed, along with the require
 ## Requirements
 
 *   Python 3.11
-*   Libraries listed in `requirements.txt` (install using `pip install -r requirements.txt`)
+*   Numpy
+*   Sckit-learn
+*   TensorFlow
+*   Keras
+*   Matplotlib (for demo)
+*   Jupiter (for demo)
+ 
+*   `requirements.txt` can be used (install using `pip install -r requirements.txt`).
 
 ## Running the Demo
 
@@ -75,14 +82,23 @@ The `demo.ipynb` Jupyter Notebook provides a demonstration of how to use the `Mn
 
 ## Edge Cases and Considerations
 
-*(Optional: Briefly mention things like data normalization being important, the models are trained with default parameters and hyperparameter tuning could improve performance, potential for overfitting in more complex models if not regularized etc. Keep it concise, focus is on demonstrating the core functionality)*
+### Edge Cases:
 
-For example:
+*   Edge cases are linked to the parameters;
+*   If user provides invalid model during instantiating (`'rf'`, `'nn'`, `'cnn'`), reaction would be a corresponding error. There is **no** default model and this is **intentional**.
+*   Providing `epochs` for `Random Forest` won't cause crush; 
+*   NN and CNN have default values of `epochs`, in case it hasn't been provided. 
+*   Providing invalid values (`None`, str, negative) to `epoch` parameter into NN\CNN will be gracefully handled with error. 
+     
+### For practical application beyond this demo, consider the following:
 
-*   **Data Normalization:** The MNIST pixel values are normalized to the range [0, 1]. This is crucial for the neural network models to train effectively.
-*   **Model Hyperparameters:** The models are initialized with default parameters. For optimal performance in a real-world scenario, hyperparameter tuning would be necessary.
-*   **Computational Resources:** Training Convolutional Neural Networks, especially deeper ones, can be computationally intensive and may require a GPU for faster training.
-
+*   **Data Normalization:** Essential for neural network training efficiency and stability.
+*   **Hyperparameter Tuning:** Default model parameters are used; tuning is needed for optimal performance.
+*   **Computational Cost:** CNN training is resource-intensive; GPUs can significantly speed up training.
+*   **Overfitting Potential:** Neural networks can overfit, especially on limited datasets. Regularization techniques may be necessary for complex models.
+*   **MNIST Simplicity:** MNIST is a simplified dataset. Real-world image tasks are typically more complex.
+*   **Data Splitting:**  MNIST has a predefined split. Real-world projects require careful train/test/validation data management.
+This section is intended to provide context and highlight areas for further exploration and improvement beyond the basic functionality demonstrated in this project.
 ---
-**Author:** [Your Name or GitHub Username]
-**Date:** [Current Date]
+* Author: Hennadii Olynykov 
+* e-mail: lerigort@gmail.com

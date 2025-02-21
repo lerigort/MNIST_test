@@ -15,7 +15,7 @@ class MnistClassifierInterface(ABC):
     """
 
     @abstractmethod
-    def train(self, X_train, y_train):
+    def train(self, X_train, y_train, epochs=None):
         """
         Trains the classifier model.
 
@@ -45,11 +45,13 @@ class RandomForestMnistClassifier(MnistClassifierInterface):
     def __init__(self):
         self.model = RandomForestClassifier(random_state=42) # You can adjust parameters
 
-    def train(self, X_train, y_train):
+    def train(self, X_train, y_train, epochs=None):
         # Random Forest works best with 1D input features
         n_samples, img_height, img_width = X_train.shape
         X_train_reshaped = X_train.reshape((n_samples, img_height * img_width))
         self.model.fit(X_train_reshaped, y_train)
+        # Random Forest doesn't have epochs and won't return history of training
+        return None
 
     def predict(self, X):
         n_samples, img_height, img_width = X.shape
@@ -71,8 +73,14 @@ class NeuralNetworkMnistClassifier(MnistClassifierInterface):
                            loss='sparse_categorical_crossentropy', # for integer labels
                            metrics=['accuracy'])
 
-    def train(self, X_train, y_train):
-        self.model.fit(X_train, y_train, epochs=10, verbose=0) # epochs can be adjusted
+    def train(self, X_train, y_train, epochs=10):
+
+        if not isinstance(epochs, int) or epochs <= 0:  # Combined type and positivity check
+            raise ValueError(f"Invalid epochs value: {epochs}. "
+                             "Epochs must be a positive integer.")
+
+        history = self.model.fit(X_train, y_train, epochs=epochs, verbose=0)
+        return history
 
     def predict(self, X):
         probabilities = self.model.predict(X)
@@ -96,10 +104,16 @@ class CNNMnistClassifier(MnistClassifierInterface):
                            loss='sparse_categorical_crossentropy', # for integer labels
                            metrics=['accuracy'])
 
-    def train(self, X_train, y_train):
+    def train(self, X_train, y_train, epochs=10):
         # CNN expects input with channel dimension
+
+        if not isinstance(epochs, int) or epochs <= 0:  # Combined type and positivity check
+            raise ValueError(f"Invalid epochs value: {epochs}. "
+                             "Epochs must be a positive integer.")
+
         X_train_expanded = np.expand_dims(X_train, axis=-1) # Add channel dimension (grayscale)
-        self.model.fit(X_train_expanded, y_train, epochs=10, verbose=0) # epochs can be adjusted
+        history = self.model.fit(X_train_expanded, y_train, epochs=epochs, verbose=0)
+        return history
 
     def predict(self, X):
         X_expanded = np.expand_dims(X, axis=-1) # Add channel dimension for prediction
@@ -130,12 +144,13 @@ class MnistClassifier:
             raise ValueError(f"Invalid algorithm: {self.algorithm}. "
                              "Choose from 'rf', 'nn', or 'cnn'.")
 
-    def train(self, X_train, y_train):
+    def train(self, X_train, y_train, epochs=None):
         """
         Trains the selected classifier model.
         Delegates the training to the underlying concrete model.
         """
-        self._model.train(X_train, y_train)
+        history = self._model.train(X_train, y_train, epochs)
+        return history
 
     def predict(self, X):
         """
@@ -143,7 +158,6 @@ class MnistClassifier:
         Delegates the prediction to the underlying concrete model.
         """
         return self._model.predict(X)
-
 
 if __name__ == "__main__":
     # 1. Load and Prepare MNIST Data
